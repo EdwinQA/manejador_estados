@@ -1,14 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:manejador_estados/services/usuario_service.dart';
+
+import '../models/usuario.dart';
 
 class Pagina1Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pagina 1'),
+        title: Center(child: Text('Pagina 1')),
       ),
-      body: InformacionUsuario(),
+      body: StreamBuilder(
+        stream: usuarioService.usuarioStream,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return snapshot.hasData
+              ? InformacionUsuario(usuarioService.usuario)
+              : Center(
+            child: Text('No Hay informacion del usuario'),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -20,6 +32,10 @@ class Pagina1Page extends StatelessWidget {
 }
 
 class InformacionUsuario extends StatelessWidget {
+  final Usuario usuario;
+
+  const InformacionUsuario(this.usuario);
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -38,8 +54,8 @@ class InformacionUsuario extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              ListTile(title: Text('Nombre')),
-              ListTile(title: Text('Edad')),
+              ListTile(title: Text('Nombre: ${usuario.nombre}')),
+              ListTile(title: Text('Edad: ${usuario.edad}')),
               Text(
                 'Profesiones',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
