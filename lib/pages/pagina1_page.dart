@@ -1,18 +1,31 @@
+import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:manejador_estados/controllers/usuario_controller.dart';
+import 'package:manejador_estados/models/usuario.dart';
+import 'package:manejador_estados/pages/pagina2_page.dart';
 
 class Pagina1Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final usuarioCtrl = Get.put(UsuarioController());
     return Scaffold(
       appBar: AppBar(
         title: Text('Pagina 1'),
       ),
-      body: InformacionUsuario(),
+      body: Obx(() => usuarioCtrl.existeUsuario.value
+          ? InformacionUsuario(usuaio: usuarioCtrl.usuario.value)
+          : Center(
+              child: Text('No hay un usuario'),
+            )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.pushNamed(context, 'pagina2');
+          //Navigator.pushNamed(context, 'pagina2');
+          Get.to(Pagina2Page(), arguments: {
+            'nombre': 'Fermamdo',
+            'edad': '22',
+          });
         },
       ),
     );
@@ -20,6 +33,10 @@ class Pagina1Page extends StatelessWidget {
 }
 
 class InformacionUsuario extends StatelessWidget {
+  final Usuario usuaio;
+
+  const InformacionUsuario({Key? key, required this.usuaio}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -38,16 +55,16 @@ class InformacionUsuario extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              ListTile(title: Text('Nombre')),
-              ListTile(title: Text('Edad')),
+              ListTile(title: Text('Nombre: ${this.usuaio.nombre}')),
+              ListTile(title: Text('Edad: ${this.usuaio.edad}')),
               Text(
                 'Profesiones',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              ListTile(title: Text('Profesion 1')),
-              ListTile(title: Text('Profesion 2')),
-              ListTile(title: Text('Profesion 3')),
+              ...usuaio.profesiones
+                  .map((profesion) => ListTile(title: Text(profesion)))
+                  .toList()
             ],
           )),
     );
